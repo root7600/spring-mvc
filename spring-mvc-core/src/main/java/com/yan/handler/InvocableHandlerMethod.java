@@ -48,6 +48,16 @@ public class InvocableHandlerMethod extends HandlerMethod{
         this.returnValueHandler = returnValueHandler;
         this.conversionService = conversionService;
     }
+
+    public InvocableHandlerMethod(Object bean, Method method,
+                                  HandlerMethodArgumentResolverComposite argumentResolver,
+                                  HandlerMethodReturnValueHandlerComposite returnValueHandler,
+                                  ConversionService conversionService) {
+        super(bean, method);
+        this.argumentResolver = argumentResolver;
+        this.returnValueHandler = returnValueHandler;
+        this.conversionService = conversionService;
+    }
     /**
      * 调用handler
      *
@@ -57,7 +67,8 @@ public class InvocableHandlerMethod extends HandlerMethod{
      */
     public void invokeAndHandle(HttpServletRequest request,
                                 HttpServletResponse response,
-                                ModelAndViewContainer mavContainer) throws Exception {
+                                ModelAndViewContainer mavContainer,
+                                Object... providedArgs) throws Exception {
 
         List<Object> args = this.getMethodArgumentValues(request, response, mavContainer);
         Object resultValue = doInvoke(args);
