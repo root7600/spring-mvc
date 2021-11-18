@@ -6,25 +6,24 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author hairui
- * @date 2021/11/17
+ * @date 2021/11/18
  * @des
  */
-public class ServletResponseMethodArgumentResolver implements HandlerMethodArgumentResolver{
+public class ModelMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        Class<?> parameterType = parameter.getParameterType();
-        return ServletResponse.class.isAssignableFrom(parameterType);
+        return Model.class.isAssignableFrom(parameter.getParameterType());
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, HttpServletRequest request, HttpServletResponse response, ModelAndViewContainer container, ConversionService conversionService) throws Exception {
-        return response;
+        Assert.state(container != null, "ModelAndViewContainer is required for model exposure");
+        return container.getModel();
     }
 }

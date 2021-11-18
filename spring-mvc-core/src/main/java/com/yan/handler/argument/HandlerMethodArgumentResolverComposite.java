@@ -40,8 +40,8 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
             this.argumentResolvers.add(resolver);
         }
 
-        public void addResolver(HandlerMethodArgumentResolver... resolvers) {
-            Collections.addAll(this.argumentResolvers, resolvers);
+        public void addResolver(List<HandlerMethodArgumentResolver> resolvers) {
+            this.argumentResolvers.addAll(resolvers);
         }
 
         public void clear() {
