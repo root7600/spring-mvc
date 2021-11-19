@@ -34,4 +34,20 @@ public class DispatcherServletTest extends BaseJunit4Test{
         response.getHeaderNames().forEach(headerName ->
                 System.out.println(headerName + ":" + response.getHeader(headerName)));
     }
+
+    @Test
+    public void test2() throws ServletException, IOException {
+        dispatcherServlet.init();
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setParameter("name", "silently9527");
+        request.setRequestURI("/test/dispatch2");
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        dispatcherServlet.service(request, response);
+
+        System.out.println("响应到客户端的数据：");
+        System.out.println(response.getContentAsString());
+    }
 }

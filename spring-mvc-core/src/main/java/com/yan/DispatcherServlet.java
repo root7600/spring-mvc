@@ -2,6 +2,7 @@ package com.yan;
 
 import com.yan.handler.HandlerMapping;
 import com.yan.handler.adapter.HandlerAdapter;
+import com.yan.handler.exception.HandlerExceptionResolver;
 import com.yan.handler.mapping.HandlerExecutionChain;
 import com.yan.utils.RequestContextHolder;
 import com.yan.view.View;
@@ -9,6 +10,7 @@ import com.yan.view.resolver.ViewResolver;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletException;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -31,6 +34,7 @@ public class DispatcherServlet extends HttpServlet implements ApplicationContext
     private HandlerMapping handlerMapping;
     private HandlerAdapter handlerAdapter;
     private ViewResolver viewResolver;
+    private Collection<HandlerExceptionResolver> handlerExceptionResolvers;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -46,6 +50,8 @@ public class DispatcherServlet extends HttpServlet implements ApplicationContext
         this.handlerMapping = this.applicationContext.getBean(HandlerMapping.class);
         this.handlerAdapter = this.applicationContext.getBean(HandlerAdapter.class);
         this.viewResolver = this.applicationContext.getBean(ViewResolver.class);
+        this.handlerExceptionResolvers =
+                this.applicationContext.getBeansOfType(HandlerExceptionResolver.class).values();
     }
 
     /**
@@ -134,8 +140,18 @@ public class DispatcherServlet extends HttpServlet implements ApplicationContext
     }
 
     //出现异常后的ModelAndView
-    private ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response, Exception ex) {
-        return null;
+    private ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response, Exception ex) throws Exception {
+        if (CollectionUtils.isEmpty(this.handlerExceptionResolvers)) {
+            throw ex;
+        }
+        for (HandlerExceptionResolver resolver : this.handlerExceptionResolvers) {
+            ModelAndView exMv = resolver.resolveException(request, response, ex);
+            if (exMv != null) {
+                return exMv;
+            }
+        }
+        //未找到对应的异常处理器，就继续抛出异常
+        throw ex;
     }
 
     private void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -153,4 +169,6 @@ public class DispatcherServlet extends HttpServlet implements ApplicationContext
         }
         view.render(mv.getModel().asMap(), request, response);
     }
+
+
 }

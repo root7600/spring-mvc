@@ -20,11 +20,6 @@ public class HandlerMethodReturnValueHandlerComposite implements HandlerMethodRe
     private List<HandlerMethodReturnValueHandler> returnValueHandlers = new ArrayList<>();
 
     @Override
-    public boolean supportsReturnType(MethodParameter returnType) {
-        return true;
-    }
-
-    @Override
     public void handleReturnValue(Object returnValue,
                                   MethodParameter returnType,
                                   ModelAndViewContainer mavContainer,
@@ -43,6 +38,11 @@ public class HandlerMethodReturnValueHandlerComposite implements HandlerMethodRe
                 }
             }
         });
+    }
+
+    @Override
+    public boolean supportsReturnType(MethodParameter returnType) {
+        return true;
     }
 
     public void clear() {

@@ -4,6 +4,8 @@ import com.yan.DispatcherServlet;
 import com.yan.handler.HandlerMapping;
 import com.yan.handler.adapter.HandlerAdapter;
 import com.yan.handler.adapter.RequestMappingHandlerAdapter;
+import com.yan.handler.exception.ExceptionHandlerExceptionResolver;
+import com.yan.handler.exception.HandlerExceptionResolver;
 import com.yan.handler.interceptor.InterceptorRegistry;
 import com.yan.handler.mapping.RequestMappingHandlerMapping;
 import com.yan.view.resolver.ContentNegotiatingViewResolver;
@@ -74,4 +76,10 @@ public class AppConfig {
         return new DispatcherServlet();
     }
 
+    @Bean
+    public HandlerExceptionResolver handlerExceptionResolver(ConversionService conversionService) {
+        ExceptionHandlerExceptionResolver resolver = new ExceptionHandlerExceptionResolver();
+        resolver.setConversionService(conversionService);
+        return resolver;
+    }
 }

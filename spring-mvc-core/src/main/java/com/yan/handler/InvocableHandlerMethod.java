@@ -7,6 +7,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,7 +71,7 @@ public class InvocableHandlerMethod extends HandlerMethod{
                                 ModelAndViewContainer mavContainer,
                                 Object... providedArgs) throws Exception {
 
-        List<Object> args = this.getMethodArgumentValues(request, response, mavContainer);
+        List<Object> args = this.getMethodArgumentValues(request, response, mavContainer,providedArgs);
         Object resultValue = doInvoke(args);
         //返回为空
         if (Objects.isNull(resultValue)) {
@@ -96,19 +97,37 @@ public class InvocableHandlerMethod extends HandlerMethod{
 
     private List<Object> getMethodArgumentValues(HttpServletRequest request,
                                                  HttpServletResponse response,
-                                                 ModelAndViewContainer mavContainer) throws Exception {
+                                                 ModelAndViewContainer mavContainer,Object... providedArgs) throws Exception {
         Assert.notNull(argumentResolver, "HandlerMethodArgumentResolver can not null");
 
         List<MethodParameter> parameters = this.getParameters();
         List<Object> args = new ArrayList<>(parameters.size());
         for (MethodParameter parameter : parameters) {
             parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
+            Object arg = findProvidedArgument(parameter, providedArgs);
+            if (Objects.nonNull(arg)) {
+                args.add(arg);
+                continue;
+            }
             args.add(argumentResolver.resolveArgument(parameter, request, response, mavContainer, conversionService));
         }
         return args;
     }
 
+    protected static Object findProvidedArgument(MethodParameter parameter, Object... providedArgs) {
+        if (!ObjectUtils.isEmpty(providedArgs)) {
+            for (Object providedArg : providedArgs) {
+                if (parameter.getParameterType().isInstance(providedArg)) {
+                    return providedArg;
+                }
+            }
+        }
+        return null;
+    }
+
     public void setParameterNameDiscoverer(ParameterNameDiscoverer parameterNameDiscoverer) {
         this.parameterNameDiscoverer = parameterNameDiscoverer;
     }
+
+
 }
