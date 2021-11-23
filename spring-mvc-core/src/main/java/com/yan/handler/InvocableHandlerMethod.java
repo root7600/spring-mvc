@@ -101,6 +101,7 @@ public class InvocableHandlerMethod extends HandlerMethod{
         Assert.notNull(argumentResolver, "HandlerMethodArgumentResolver can not null");
 
         List<MethodParameter> parameters = this.getParameters();
+
         List<Object> args = new ArrayList<>(parameters.size());
         for (MethodParameter parameter : parameters) {
             parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
