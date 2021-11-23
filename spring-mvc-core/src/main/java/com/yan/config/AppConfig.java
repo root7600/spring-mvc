@@ -1,6 +1,7 @@
 package com.yan.config;
 
 import com.yan.DispatcherServlet;
+import com.yan.annotation.EnableWebMvc;
 import com.yan.handler.HandlerMapping;
 import com.yan.handler.adapter.HandlerAdapter;
 import com.yan.handler.adapter.RequestMappingHandlerAdapter;
@@ -27,6 +28,7 @@ import java.util.Collections;
  */
 @Configuration
 @ComponentScan(basePackages = "com.yan")
+@EnableWebMvc
 public class AppConfig {
 
 /*    @Bean
@@ -47,7 +49,7 @@ public class AppConfig {
         return mapping;
     }*/
 
-    @Bean
+/*    @Bean
     public HandlerMapping handlerMapping() {
         return new RequestMappingHandlerMapping();
     }
@@ -70,16 +72,16 @@ public class AppConfig {
         ContentNegotiatingViewResolver negotiatingViewResolver = new ContentNegotiatingViewResolver();
         negotiatingViewResolver.setViewResolvers(Collections.singletonList(new InternalResourceViewResolver()));
         return negotiatingViewResolver;
-    }
+    }*/
     @Bean
     public DispatcherServlet dispatcherServlet() {
         return new DispatcherServlet();
     }
 
-    @Bean
+/*    @Bean
     public HandlerExceptionResolver handlerExceptionResolver(ConversionService conversionService) {
         ExceptionHandlerExceptionResolver resolver = new ExceptionHandlerExceptionResolver();
         resolver.setConversionService(conversionService);
         return resolver;
-    }
+    }*/
 }
